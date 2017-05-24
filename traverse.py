@@ -6,7 +6,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-
+__version__ = '1.1'
 
 def find_all_codes(path):
     """
@@ -100,7 +100,7 @@ def main(folder):
     print('Translate EMIS id to SNOMED read code')
     for code in codes:
         snomed = emis_to_snomed(emis_codes, code['code'])
-        code['code'] = snomed['ReadCV2'] if snomed else code['code']
+        code['code'] = snomed['ReadCV2'] if snomed else 'zzzCan\'t resolve code'
 
     print('CSV output')
     headers = ['path', 'file', 'library', 'page', 'location', 'prompt', 'displayName', 'code', 'codeSystem',
@@ -115,6 +115,7 @@ def main(folder):
     subprocess.Popen([excel_path, temp_results_file])
 
 if __name__ == '__main__':
+    print('version: {0}'.format(__version__))
     if len(sys.argv) != 2:
         print('Usage: traverse "<FOLDER_PATH>"')
         sys.exit(1)
@@ -124,6 +125,3 @@ if __name__ == '__main__':
     else:
         folder = sys.argv[1]
         main(sys.argv[1])
-
-# Run with
-# "H:\python_environments\template_xml\Scripts\python.exe" "H:\Coding\github\EMIS Template Code Search\traverse.py" "M:\BCH\Informatics\Clinical Systems\EMIS\Templates\Live Domain XML\Current"
