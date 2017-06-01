@@ -112,6 +112,7 @@ def main(folder):
         csv_obj.writeheader()
         for c in codes:
             csv_obj.writerow(c)
+    print('Outputting to: {0]'.format(temp_results_file))
     subprocess.Popen([excel_path, temp_results_file])
 
 if __name__ == '__main__':
