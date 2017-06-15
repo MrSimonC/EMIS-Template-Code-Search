@@ -1,2 +1,7 @@
 bch cmd run command.bat
 Thumbs.db
+.idea/
+Archive/
+__pycache__/
+build/
+traverse.spec

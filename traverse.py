@@ -1,12 +1,28 @@
+"""Traverse EMIS xml
+
+Usage: traverse FOLDER [-d (DATABASE_SERVER) -u (DATABASE_USERNAME)]
+
+Options:
+    -d              change database connection server
+    -u              change database username (you will be prompted for password)
+
+Arguments:
+    FOLDER              path to EMIS Template xml files
+    DATABASE_SERVER     name of the database server e.g. sqlanalytics.emis.thirdparty.nhs.uk,1601
+    DATABASE_USERNAME   database username (default is "SimonCrouch")
+"""
+from docopt import docopt
 import csv
 import datetime
+import getpass
 import mssql
 import os
 import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '1.1'
+__version__ = '2.0'
+
 
 def find_all_codes(path):
     """
@@ -59,6 +75,9 @@ def find_all_codes(path):
 
     return results
 
+def file_ext(path):
+    filename, extension = os.path.splitext(path)
+    return extension
 
 def emis_to_snomed(emis_codes, emis_id):
     """
@@ -72,7 +91,7 @@ def emis_to_snomed(emis_codes, emis_id):
             return code
 
 
-def main(folder):
+def main(folder, db_server, db_user, db_pass):
     # Env vars check
     try:
         if not os.environ['EMIS_SQL']:
@@ -82,19 +101,13 @@ def main(folder):
         print('Needed environment variables not found')
         sys.exit(1)  # exit as error
 
-    # Excel path check
-    excel_path = r'C:\Program Files (x86)\Microsoft Office\Office14\EXCEL.EXE'
-    if not os.path.exists(excel_path):
-        print('I can\'t find "{path}" - can you correct the code?'.format(path=excel_path))
-        sys.exit(1)
-
     # Main code
     all_files = [os.path.join(path, file) for path, _, files in os.walk(folder) for file in files
-                 if os.path.basename(path) != 'Archive']
+                 if os.path.basename(path) != 'Archive' and file_ext(file) == '.xml']
     codes = [x for file in all_files for x in find_all_codes(file)]
 
     print('Get EMIS IDs vs SNOMED codes from database')
-    db = mssql.QueryDB('sqlanalytics.emis.thirdparty.nhs.uk,1601', 'BCH_Community', 'SimonCrouch', os.environ['EMIS_SQL'])
+    db = mssql.QueryDB(db_server, 'BCH_Community', db_user, db_pass)
     emis_codes = db.exec_sql('select * from dbo.CodeLookup')
 
     print('Translate EMIS id to SNOMED read code')
@@ -112,17 +125,25 @@ def main(folder):
         csv_obj.writeheader()
         for c in codes:
             csv_obj.writerow(c)
-    print('Outputting to: {0]'.format(temp_results_file))
-    subprocess.Popen([excel_path, temp_results_file])
+    print('Outputting to: {0}'.format(temp_results_file))
+    # subprocess.Popen([excel_path, temp_results_file])
+    subprocess.Popen(temp_results_file, shell=True)
 
 if __name__ == '__main__':
-    print('version: {0}'.format(__version__))
-    if len(sys.argv) != 2:
-        print('Usage: traverse "<FOLDER_PATH>"')
-        sys.exit(1)
-    elif not(os.path.isdir(sys.argv[1])):
+    print('Traverse EMIS xml v{0}'.format(__version__))
+    database_server = 'sqlanalytics.emis.thirdparty.nhs.uk,1601'
+    database_user = 'SimonCrouch'
+    try:
+        database_password = os.environ['EMIS_SQL']
+    except KeyError:
+        database_password = ''
+        pass
+    args = docopt(__doc__)
+    if not (os.path.isdir(args['FOLDER'])):
         print('Path "{path}" not valid'.format(path=sys.argv[1]))
         sys.exit(1)
-    else:
-        folder = sys.argv[1]
-        main(sys.argv[1])
+    if args['-d'] and args['-u']:
+        database_server = args['DATABASE_SERVER']
+        database_user = args['DATABASE_USERNAME']
+        database_password = getpass.getpass('Password: ')
+    main(args['FOLDER'], database_server, database_user, database_password)
