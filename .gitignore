@@ -5,3 +5,5 @@ Archive/
 __pycache__/
 build/
 traverse.spec
+bch run exe.bat
+bch run python in venv.bat

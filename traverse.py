@@ -17,11 +17,12 @@ import datetime
 import getpass
 import mssql
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.0'
+__version__ = '2.1'
 
 
 def find_all_codes(path):
@@ -63,7 +64,13 @@ def find_all_codes(path):
                                     if code.attrib:
                                         result = code.attrib
                                         result['path'] = path
-                                        result['file'] = os.path.split(path)[1]
+                                        filename = os.path.split(path)[1]
+                                        re_remove_version = r'\s(\.xml+|[vV]+[0-9]+\.*[0-9]*\.xml+)$'
+                                        # remove version and extension
+                                        result['template name'] = filename.replace(
+                                            re.search(re_remove_version, filename).group(), '') \
+                                            if re.search(re_remove_version, filename) \
+                                            else filename.replace('.xml', '')
                                         result['library'] = library
                                         result['page'] = page
                                         result['location'] = location
@@ -75,9 +82,11 @@ def find_all_codes(path):
 
     return results
 
+
 def file_ext(path):
     filename, extension = os.path.splitext(path)
     return extension
+
 
 def emis_to_snomed(emis_codes, emis_id):
     """
@@ -116,7 +125,7 @@ def main(folder, db_server, db_user, db_pass):
         code['code'] = snomed['ReadCV2'] if snomed else 'zzzCan\'t resolve code'
 
     print('CSV output')
-    headers = ['path', 'file', 'library', 'page', 'location', 'prompt', 'displayName', 'code', 'codeSystem',
+    headers = ['path', 'template name', 'library', 'page', 'location', 'prompt', 'displayName', 'code', 'codeSystem',
                'mandatory', 'prompt for date', 'diary']
     timestamp = datetime.datetime.now().strftime('%d%b%y_%H%M')
     temp_results_file = os.path.join(tempfile.gettempdir(), 'emis_template_analysis_{0}.csv'.format(timestamp))
@@ -126,7 +135,6 @@ def main(folder, db_server, db_user, db_pass):
         for c in codes:
             csv_obj.writerow(c)
     print('Outputting to: {0}'.format(temp_results_file))
-    # subprocess.Popen([excel_path, temp_results_file])
     subprocess.Popen(temp_results_file, shell=True)
 
 if __name__ == '__main__':
