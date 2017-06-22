@@ -22,4 +22,4 @@ Arguments:
 
 ### Versions
 * v2.0 - Introduced docopt-style input of user options and allowed database, username and password input, and froze into exe
-* v2.1 - Remove the Version number and .xml extension in results for easier vlookup use in excel later
+* v2.1.1 - Remove the Version number and .xml extension in results for easier vlookup use in excel later

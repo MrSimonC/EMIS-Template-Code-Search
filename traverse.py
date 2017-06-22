@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.1'
+__version__ = '2.1.1'
 
 
 def find_all_codes(path):
@@ -65,7 +65,7 @@ def find_all_codes(path):
                                         result = code.attrib
                                         result['path'] = path
                                         filename = os.path.split(path)[1]
-                                        re_remove_version = r'\s(\.xml+|[vV]+[0-9]+\.*[0-9]*\.xml+)$'
+                                        re_remove_version = r'\s*(\.xml+|[vV]+[0-9]+\.*[0-9]*\.xml+)$'
                                         # remove version and extension
                                         result['template name'] = filename.replace(
                                             re.search(re_remove_version, filename).group(), '') \
