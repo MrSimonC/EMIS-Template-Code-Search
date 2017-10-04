@@ -1,0 +1,2 @@
+BCH Run with:
+"H:\python_environments\template_xml\Scripts\python.exe" "H:\Coding\github\EMIS Template Code Search\traverse.py" "M:\BCH\Informatics\Clinical Systems\EMIS\Templates\Live Domain XML\Current"

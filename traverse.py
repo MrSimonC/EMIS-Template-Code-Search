@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 
 
 def find_all_codes(path):
@@ -102,13 +102,13 @@ def emis_to_snomed(emis_codes, emis_id):
 
 def main(folder, db_server, db_user, db_pass):
     # Env vars check
-    try:
-        if not os.environ['EMIS_SQL']:
-            print('Needed environment variables not found')
-            sys.exit(1)  # exit as error
-    except KeyError:
-        print('Needed environment variables not found')
-        sys.exit(1)  # exit as error
+    # try:
+    #     if not os.environ['EMIS_SQL']:
+    #         print('Needed environment variables not found')
+    #         sys.exit(1)  # exit as error
+    # except KeyError:
+    #     print('Needed environment variables not found')
+    #     sys.exit(1)  # exit as error
 
     # Main code
     all_files = [os.path.join(path, file) for path, _, files in os.walk(folder) for file in files
