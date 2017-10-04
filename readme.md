@@ -5,9 +5,16 @@ It will miss out folders named "Archive". It will output results to a csv file s
 
 As extracted EMIS template xml files only contain in internal EMIS ID code representing the SNOMED code, this program also contacts an EMIS extract database to resolve the internal ID, translating it to the actual SNOMED code.
 
+## Prerequisite
+Add your database password into an environment variable via:
+
+`setx EMIS_SQL MY_PASSWORD`
+
+_(This will change to an optional requirment once I can develop code on a computer which doesn't block pip at work!)_
+
 ## Run
 To run the tool in windows command line:
-```bash
+```
 traverse FOLDER [-d (DATABASE_SERVER) -u (DATABASE_USERNAME)]
 
 Options:
