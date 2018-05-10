@@ -16,7 +16,7 @@ As extracted EMIS template xml files only contain in internal EMIS ID code repre
 
 To run the tool in windows command line:
 
-```batch
+```
 traverse.exe FOLDER [-d (DATABASE_SERVER) -u (DATABASE_USERNAME)]
 or
 python traverse.py FOLDER [-d (DATABASE_SERVER) -u (DATABASE_USERNAME)]
