@@ -84,7 +84,7 @@ def find_all_codes(path):
 
 
 def file_ext(path):
-    filename, extension = os.path.splitext(path)
+    _, extension = os.path.splitext(path)
     return extension
 
 
