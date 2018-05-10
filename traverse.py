@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 
 
 def find_all_codes(path):
@@ -101,30 +101,23 @@ def emis_to_snomed(emis_codes, emis_id):
 
 
 def main(folder, db_server, db_user, db_pass):
-    # Env vars check
-    try:
-        if not os.environ['EMIS_SQL']:
-            print('Needed environment variables not found')
-            sys.exit(1)  # exit as error
-    except KeyError:
-        print('Needed environment variables not found')
-        sys.exit(1)  # exit as error
-
-    # Main code
+    print('Traversing the xml folder now')
     all_files = [os.path.join(path, file) for path, _, files in os.walk(folder) for file in files
                  if os.path.basename(path) != 'Archive' and file_ext(file) == '.xml']
     codes = [x for file in all_files for x in find_all_codes(file)]
+    print('XML files successfully traversed')
 
     print('Get EMIS IDs vs SNOMED codes from database')
     db = mssql.QueryDB(db_server, 'BCH_Community', db_user, db_pass)
     emis_codes = db.exec_sql('select * from dbo.CodeLookup')
+    print('SNOMED codes successfully obtained')
 
-    print('Translate EMIS id to SNOMED read code')
+    print('Translating EMIS IDs to SNOMED read codes')
     for code in codes:
         snomed = emis_to_snomed(emis_codes, code['code'])
         code['code'] = snomed['ReadCV2'] if snomed else 'zzzCan\'t resolve code'
 
-    print('CSV output')
+    print('Ouputting CSV')
     headers = ['path', 'template name', 'library', 'page', 'location', 'prompt', 'displayName', 'code', 'codeSystem',
                'mandatory', 'prompt for date', 'diary']
     timestamp = datetime.datetime.now().strftime('%d%b%y_%H%M')
@@ -148,10 +141,16 @@ if __name__ == '__main__':
         pass
     args = docopt(__doc__)
     if not (os.path.isdir(args['FOLDER'])):
-        print('Path "{path}" not valid'.format(path=sys.argv[1]))
+        print('Path "{path}" not valid. Please check the folder exists for your FOLDER input'.format(path=sys.argv[1]))
         sys.exit(1)
     if args['-d'] and args['-u']:
         database_server = args['DATABASE_SERVER']
         database_user = args['DATABASE_USERNAME']
-        database_password = getpass.getpass('Password: ')
+        try:
+            database_password = os.environ['EMIS_SQL']
+            print('Found a password in EMIS_SQL environment variable. Using that.')
+        except KeyError:
+            print('No password found in EMIS_SQL environment variable - please enter one.')
+            database_password = getpass.getpass('Password: ')
+            pass
     main(args['FOLDER'], database_server, database_user, database_password)
