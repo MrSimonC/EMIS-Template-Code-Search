@@ -31,6 +31,18 @@ Arguments:
     DATABASE_USERNAME   database username (default is "SimonCrouch")
 ```
 
+## Python specifics
+
+To use the code rather than the exe, see below requirements.
+
+### Python Prequisites
+
+Install python modules: `pip install docopt pyodbc`
+
+### To freeze to an exe
+
+Install python modules: `pip install pypiwin32 pyinstaller`. If in a virtualenv, use `where pyinstaller` to ensure the correct one is being used, then `pyinstaller --onefile traverse.py`
+
 ### Versions
 
 * v2.0 - Introduced docopt-style input of user options and allowed database, username and password input, and froze into exe

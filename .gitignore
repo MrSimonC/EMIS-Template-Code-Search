@@ -1,9 +1,10 @@
-bch cmd run command.bat
-Thumbs.db
+__pycache__/
 .idea/
 Archive/
-__pycache__/
-build/
-traverse.spec
+bch cmd run command.bat
 bch run exe.bat
 bch run python in venv.bat
+build/
+env/
+Thumbs.db
+traverse.spec
