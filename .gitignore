@@ -8,3 +8,4 @@ build/
 env/
 Thumbs.db
 traverse.spec
+.vscode/settings.json
