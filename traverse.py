@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.1.2'
+__version__ = '2.1.3'
 
 
 def find_all_codes(path):
@@ -31,7 +31,9 @@ def find_all_codes(path):
     :param path: file path to emis template xml file
     :return: list(Dict[xml fields]) e.g. [{'displayName': 'Goal achieved'}, {'mandatory': 'false', 'codeSystem': '2...
     """
-    tree = Et.parse(path)
+    with open(path) as f:
+        xml = f.read()
+    tree = Et.fromstring(re.sub(r"(<\?xml[^>]+\?>)", r"\1<root>", xml) + "</root>")  # fix bad xml by containing all file within a "<root>" node
 
     # remove namespace
     for el in tree.iter():
@@ -133,7 +135,7 @@ def main(folder, db_server, db_user, db_pass):
 if __name__ == '__main__':
     print('Traverse EMIS xml v{0}'.format(__version__))
     database_server = 'sqlanalytics.emis.thirdparty.nhs.uk,1601'
-    database_user = 'SimonCrouch'
+    database_user = 'Paul.Stinson'
     try:
         database_password = os.environ['EMIS_SQL']
     except KeyError:
