@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as Et
-__version__ = '2.1.3'
+__version__ = '2.1.4'
 
 
 def find_all_codes(path):
@@ -31,7 +31,7 @@ def find_all_codes(path):
     :param path: file path to emis template xml file
     :return: list(Dict[xml fields]) e.g. [{'displayName': 'Goal achieved'}, {'mandatory': 'false', 'codeSystem': '2...
     """
-    with open(path) as f:
+    with open(path, encoding='utf8') as f:
         xml = f.read()
     tree = Et.fromstring(re.sub(r"(<\?xml[^>]+\?>)", r"\1<root>", xml) + "</root>")  # fix bad xml by containing all file within a "<root>" node
 
