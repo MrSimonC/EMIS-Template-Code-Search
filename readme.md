@@ -48,3 +48,4 @@ Install python modules: `pip install pypiwin32 pyinstaller`. If in a virtualenv,
 * v2.0 - Introduced docopt-style input of user options and allowed database, username and password input, and froze into exe
 * v2.1.1 - Remove the Version number and .xml extension in results for easier vlookup use in excel later
 * v2.1.2 - `-d` and `-u` will now look at `EMIS_SQL` environment variable and use that if set
+* v2.1.4 - added utf8 encoding and wrapped xml in a single root node
